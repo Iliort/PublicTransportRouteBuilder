@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "csript.js",
+  "sourceRoot": "",
+  "sources": [
+    "csript.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,KAAK,CAAC,KAAN,CAAY,IAAZ;;EAEA,IAAA,GAAO,SAAA;AACL,QAAA;IAAA,GAAA,GAAU,IAAA,KAAK,CAAC,GAAN,CAAU,KAAV,EAAiB;MAC3B,MAAA,EAAQ,CAAC,OAAD,EAAU,OAAV,CADmB;MAE3B,IAAA,EAAM,CAFqB;KAAjB;EADL;AAFP"
+}
