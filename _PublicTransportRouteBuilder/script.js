@@ -15,8 +15,8 @@ var map;
 function init () {
 
     map = new ymaps.Map("map", {
-        center: [57.5262, 38.3061], // Углич
-        zoom: 7
+        center: [55.751244, 37.618423], // Углич
+        zoom: 12
     });
     clickHandling();
 }
@@ -28,11 +28,9 @@ function clickHandling()
         var pos = e.get('coords');
         var placemark = new ymaps.Placemark(pos, undefined, {
             preset: 'islands#circleDotIcon',
-            iconColor: '#1faee9'
-        }, {
-            draggable: true
+            iconColor: '#1faee9',
+            draggable:true
         });
-        placemark.options.draggable = true;
         placemark.properties.set('ID', curId);
         addPlacemarkEvents(placemark);
         console.log(placemark.properties.get('ID'));
@@ -77,20 +75,39 @@ function addPlacemarkEvents(placemark)
         map.geoObjects.remove(placemark);
         //map.geoObjects.removeAll();
         console.log(map.geoObjects);
-        for(var i = 0; i < routeMap.links.length; i++)
+        for(var i = 0; ; i++)
         {
-            if (routeMap.links[i][0] == id || routeMap.links[i][1] == id) routeMap.links.splice(i, 1);
-        }
-
-        for(var i = 0; i < routeMap.lines.length; i++)
-        {
-            if (routeMap.lines[i].properties.get('IDs')[0] == id || routeMap.lines[i].properties.get('IDs')[1] == id)
+            if(routeMap.links[i] === undefined) break;
+            if (routeMap.links[i][0] == id || routeMap.links[i][1] == id)
             {
-                map.geoObjects.remove(routeMap.lines[i]);
-                routeMap.lines.splice(i, 1);
+                routeMap.links.splice(i, 1);
+                i--;
             }
         }
+
+        for(var i = 0;; i++) {
+            if (routeMap.lines[i] === undefined) break;
+            if (routeMap.lines[i].properties.get('IDs')[0] == id || routeMap.lines[i].properties.get('IDs')[1] == id) {
+                map.geoObjects.remove(routeMap.lines[i]);
+                routeMap.lines.splice(i, 1);
+                i--;
+            }
+        }
+
         console.log(routeMap);
+    });
+
+    placemark.events.add('drag', function(e)
+    {
+        for(var i = 0;; i++) {
+            if (routeMap.lines[i] === undefined) break;
+            if (routeMap.lines[i].properties.get('IDs')[0] == id) {
+                routeMap.lines[i].geometry.set(0, getPlacemark(id).geometry.getCoordinates());
+            }
+            else if (routeMap.lines[i].properties.get('IDs')[1] == id) {
+                routeMap.lines[i].geometry.set(1, getPlacemark(id).geometry.getCoordinates());
+            }
+        }
     });
 
 }
