@@ -1,0 +1,22 @@
+#map
+{
+    width: 50%; height: 35em;
+    float: left;
+}
+
+#interface
+{
+    float: left;
+    margin: 10px;
+}
+
+.toolbox
+{
+    border: solid gray 2px;
+    padding: 3px;
+    margin: 10px 10px 10px 0px;
+}
+.toolbox input
+{
+    margin: 2px;
+}

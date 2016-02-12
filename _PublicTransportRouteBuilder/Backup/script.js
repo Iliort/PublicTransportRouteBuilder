@@ -51,7 +51,7 @@ function addPlacemarkEvents(placemark) {
             }
             else {
                 if (id !== selectedId) {
-                    linkPlacemarks(placemark, getPlacemark((selectedId)))
+                    linkPlacemarks(getPlacemark(id), getPlacemark((selectedId)))
                 }
                 deselectPlacemark(getPlacemark(selectedId));
             }
@@ -68,7 +68,7 @@ function addPlacemarkEvents(placemark) {
     });
 
     placemark.events.add('contextmenu', function(e){
-        var index = routeMap.placemarks.indexOf(placemark);
+        var index = routeMap.placemarks.indexOf(getPlacemark(id));
         if(index > -1) routeMap.placemarks.splice(index, 1);
 
 
@@ -93,15 +93,18 @@ function addPlacemarkEvents(placemark) {
         for(var i = 0;; i++) {
             if (routeMap.lines[i] === undefined) break;
             if (routeMap.lines[i].properties.get('IDs')[0] == id) {
-                routeMap.lines[i].geometry.set(0, placemark.geometry.getCoordinates());
+                routeMap.lines[i].geometry.set(0, getPlacemark(id).geometry.getCoordinates());
             }
             else if (routeMap.lines[i].properties.get('IDs')[1] == id) {
-                routeMap.lines[i].geometry.set(1, placemark.geometry.getCoordinates());
+                routeMap.lines[i].geometry.set(1, getPlacemark(id).geometry.getCoordinates());
             }
         }
     });
 
 }
+
+
+// TODO: Finish addLineEvents
 function addLineEvents(line) {
     var IDs = line.properties.get("IDs");
     line.events.add('click', function () {
@@ -110,14 +113,14 @@ function addLineEvents(line) {
             $("#toolbox2").show("drop", {to: {width: 200, height: 60}}, 500);
             $("#toolbox2 button").focus();
             selectLine(line);
-            $("#width_field").val(line.options.get("strokeWidth"));
-            $("#time_field").val(line.properties.get("hintContent"));
+            $("#width_field").val(getLine(IDs).options.get("strokeWidth"));
+            $("#time_field").val(getLine(IDs).properties.get("hintContent"));
             $("#colorpicker2").val(line.options.get("strokeColor"));
         }
     });
 
     line.events.add('contextmenu', function () {
-        var index = routeMap.lines.indexOf(line);
+        var index = routeMap.lines.indexOf(getLine(IDs));
         if(index > -1) routeMap.lines.splice(index, 1);
         map.geoObjects.remove(line);
     });
@@ -163,15 +166,6 @@ function selectLine(line){
     line.options.set('strokeOpacity', 1);
 }
 
-function isLinked(IDs){
-    for(var i = 0; i < routeMap.lines.length; i++){
-        var curIDs = routeMap.lines[i].properties.get("IDs");
-        if (curIDs[0] == IDs[0] && curIDs[1] == IDs[1]) return true;
-        if (curIDs[0] == IDs[1] && curIDs[1] == IDs[0]) return true;
-    }
-    return false;
-}
-
 
 function linkPlacemarks(placemark1, placemark2){
     var line = new ymaps.Polyline([
@@ -184,12 +178,10 @@ function linkPlacemarks(placemark1, placemark2){
         strokeOpacity: 0.5
     });
     line.properties.set('IDs', [placemark1.properties.get('ID'), placemark2.properties.get('ID')]);
-    if(!isLinked(line.properties.get('IDs'))) {
-        addLineEvents(line);
-        map.geoObjects.add(line);
-        routeMap.lines.push(line);
-        console.log(line.properties.get('IDs'));
-    }
+    addLineEvents(line);
+    map.geoObjects.add(line);
+    routeMap.lines.push(line);
+    console.log(routeMap);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------------------------
@@ -241,4 +233,3 @@ $(function() {
         getLine(selectedLineIds).options.set("strokeColor", $("#colorpicker2").val());
     });
 });
-// TODO: Routing + Dijkstra algorythm
